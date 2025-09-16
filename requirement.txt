@@ -1,0 +1,14 @@
+backend :
+
+npm init -y
+npm install express mongoose dotenv cors bcryptjs jsonwebtoken nodemailer
+npm install -D nodemon
+npm install multer
+
+
+Email: admin@example.com
+Password: adminpassword
+
+frontend :
+
+npm install axios react-router-dom
