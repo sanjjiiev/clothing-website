@@ -1,12 +1,12 @@
 const Product = require('../models/Product');
 
-// Add a new product with multiple images
+// Add new product
 exports.addProduct = async (req, res) => {
   try {
     const { name, category, description, price, stock } = req.body;
 
-    // Handle uploaded images
-    const images = req.files.map(file => `/uploads/${file.filename}`);
+    // Handle images
+    const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
     const product = new Product({
       name,
@@ -14,13 +14,14 @@ exports.addProduct = async (req, res) => {
       description,
       price,
       stock,
-      images
+      imageUrl: images
     });
 
     const savedProduct = await product.save();
-    res.status(201).json({ message: "Product added", product: savedProduct });
+    res.status(201).json({ message: 'Product added successfully', product: savedProduct });
   } catch (error) {
-    res.status(500).json({ message: "Error adding product", error: error.message });
+    console.error('Error adding product:', error);
+    res.status(500).json({ message: 'Error adding product', error: error.message });
   }
 };
 
@@ -30,61 +31,58 @@ exports.getProducts = async (req, res) => {
     const products = await Product.find();
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching products", error: error.message });
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 };
 
-// Get a single product by ID
+// Get product by ID
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
+    if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json(product);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching product", error: error.message });
+    console.error('Error fetching product:', error);
+    res.status(500).json({ message: 'Error fetching product', error: error.message });
   }
 };
 
-// Update a product by ID
+// Update product by ID
 exports.updateProduct = async (req, res) => {
   try {
     const { name, category, description, price, stock } = req.body;
-    let images = [];
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
+    // Update fields if provided
+    if (name) product.name = name;
+    if (category) product.category = category;
+    if (description) product.description = description;
+    if (price) product.price = price;
+    if (stock) product.stock = stock;
+
+    // If new images uploaded, replace
     if (req.files && req.files.length > 0) {
-      images = req.files.map(file => `/uploads/${file.filename}`);
+      product.imageUrl = req.files.map(file => `/uploads/${file.filename}`);
     }
 
-    const updateData = {
-      name,
-      category,
-      description,
-      price,
-      stock
-    };
-
-    // If new images are uploaded, update the images field
-    if (images.length > 0) {
-      updateData.images = images;
-    }
-
-    const product = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
-
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    res.json({ message: "Product updated", product });
+    const updatedProduct = await product.save();
+    res.json({ message: 'Product updated successfully', product: updatedProduct });
   } catch (error) {
-    res.status(500).json({ message: "Error updating product", error: error.message });
+    console.error('Error updating product:', error);
+    res.status(500).json({ message: 'Error updating product', error: error.message });
   }
 };
 
-// Delete a product by ID
+// Delete product by ID
 exports.deleteProduct = async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json({ message: "Product deleted" });
+    if (!product) return res.status(404).json({ message: 'Product not found' });
+    res.json({ message: 'Product deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: "Error deleting product", error: error.message });
+    console.error('Error deleting product:', error);
+    res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
 };
