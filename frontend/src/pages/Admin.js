@@ -154,9 +154,28 @@ function Admin() {
       <h3>All Products</h3>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', maxHeight: '500px', overflowY: 'scroll' }}>
         {products.map(product => (
-          <div key={product._id} style={{ border: '1px solid #ccc', padding: '1rem', width: '200px' }}>
+          <div key={product._id} style={{ 
+            border: `2px solid ${
+              product.category === 'Men' ? '#007bff' : 
+              product.category === 'Women' ? '#e91e63' : 
+              '#28a745'
+            }`, 
+            padding: '1rem', 
+            width: '200px',
+            borderRadius: '8px',
+            backgroundColor: product.category === 'Men' ? '#f8f9ff' : 
+                           product.category === 'Women' ? '#fdf2f8' : 
+                           '#f0fff4'
+          }}>
             <h4>{product.name}</h4>
-            <p>Category: {product.category}</p>
+            <p style={{ 
+              color: product.category === 'Men' ? '#007bff' : 
+                     product.category === 'Women' ? '#e91e63' : 
+                     '#28a745',
+              fontWeight: 'bold'
+            }}>
+              Category: {product.category}
+            </p>
             <p>Price: ${product.price}</p>
             <p>Stock: {product.stock}</p>
 

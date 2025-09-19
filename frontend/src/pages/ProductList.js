@@ -8,8 +8,15 @@ function ProductList({ cart, setCart }) {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    api.get('/products').then(res => {
-      setProducts(res.data.filter(p => p.category.toLowerCase() === category.toLowerCase()));
+    // Use the category-specific endpoint for better performance
+    api.get(`/products/category/${category}`).then(res => {
+      setProducts(res.data);
+    }).catch(err => {
+      console.error('Error fetching products by category:', err);
+      // Fallback to filtering all products if category endpoint fails
+      api.get('/products').then(res => {
+        setProducts(res.data.filter(p => p.category.toLowerCase() === category.toLowerCase()));
+      });
     });
   }, [category]);
 
