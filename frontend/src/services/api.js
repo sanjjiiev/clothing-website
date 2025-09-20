@@ -13,4 +13,12 @@ export const getProducts = () => api.get('/products');
 export const getProduct = (id) => api.get(`/products/${id}`);
 export const addOrder = (data) => api.post('/orders/create', data);
 
+// Cart API functions
+export const getCart = () => api.get('/cart');
+export const addToCart = (data) => api.post('/cart/add', data);
+export const updateCartItem = (data) => api.put('/cart/update', data);
+export const removeFromCart = (productId) => api.delete(`/cart/remove/${productId}`);
+export const clearCart = () => api.delete('/cart/clear');
+export const getCartCount = () => api.get('/cart/count');
+
 export default api;

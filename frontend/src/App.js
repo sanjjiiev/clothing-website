@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { CartProvider } from './contexts/CartContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -8,9 +9,9 @@ import ProductList from './pages/ProductList';
 import CartPage from './pages/CartPage';
 import Admin from './pages/Admin';
 import Navbar from './components/Navbar';
+import './App.css';
 
 function App() {
-  const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -28,19 +29,29 @@ function App() {
   };
 
   return (
-    <div>
-      {user && <Navbar cart={cart} handleLogout={handleLogout} user={user} />}
-      <Routes>
-        <Route path="/" element={user ? <Home handleLogout={handleLogout} /> : <Navigate to="/login" />} />
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/verify/:token" element={<VerifyEmail />} />
-        <Route path="/category/:category" element={user ? <ProductList cart={cart} setCart={setCart} /> : <Navigate to="/login" />} />
-        <Route path="/cart" element={user ? <CartPage cart={cart} setCart={setCart} /> : <Navigate to="/login" />} />
-        <Route path="/admin" element={user && user.isAdmin ? <Admin /> : <Navigate to="/login" />} />
-      </Routes>
+    <div className="app">
+      {user && <Navbar handleLogout={handleLogout} user={user} />}
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={user ? <Home handleLogout={handleLogout} /> : <Navigate to="/login" />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/verify/:token" element={<VerifyEmail />} />
+          <Route path="/category/:category" element={user ? <ProductList /> : <Navigate to="/login" />} />
+          <Route path="/cart" element={user ? <CartPage /> : <Navigate to="/login" />} />
+          <Route path="/admin" element={user && user.isAdmin ? <Admin /> : <Navigate to="/login" />} />
+        </Routes>
+      </main>
     </div>
   );
 }
 
-export default App;
+function AppWithCart() {
+  return (
+    <CartProvider>
+      <App />
+    </CartProvider>
+  );
+}
+
+export default AppWithCart;
